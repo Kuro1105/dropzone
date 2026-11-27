@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DropZone</title>
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+  <header class="hero">
+    <!-- decorative rising sun (in its own clipped layer so the status menu can overflow the header) -->
+    <div class="hero-bg" aria-hidden="true">
+      <svg class="sun" viewBox="0 0 600 320" preserveAspectRatio="xMaxYMax meet">
+        <circle cx="430" cy="360" r="330" fill="#FF8A2A"/>
+        <circle cx="430" cy="360" r="262" fill="#FFB547"/>
+        <circle cx="430" cy="360" r="200" fill="#FFD66B"/>
+        <circle cx="430" cy="360" r="140" fill="#FFF3DF"/>
+        <circle cx="430" cy="360" r="96" fill="#F0650A"/>
+      </svg>
+    </div>
+    <div class="hero-inner">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#fff"/>
+          <path d="M16 8v11m-5-5 5 5 5-5M10 23h12" stroke="#F0650A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        dropzone
+      </div>
+      <h1>Share files.<br>Skip the cables.</h1>
+      <p class="tagline">Nearby sharing for any computer on your network.</p>
+      <div class="me-row">
+        <span id="me" class="pill">connecting…</span>
+
+        <!-- Status pill = the on/off switch: click it to pick Online or Offline -->
+        <div class="status-wrap">
+          <button id="status" class="status wait" aria-haspopup="menu" aria-expanded="false" aria-controls="status-menu" disabled>
+            <span id="status-text">Connecting…</span>
+            <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div id="status-menu" class="status-menu" role="menu" hidden>
+            <p class="menu-title">This host is…</p>
+            <button class="opt" role="menuitemradio" aria-checked="true" data-online="true">
+              <span class="dot on"></span>
+              <span class="opt-text"><b>Online</b><small>Other hosts can see you and send you files.</small>
+                <small class="tech">Broadcasts UDP HELLO beacons and listens on TCP.</small></span>
+              <span class="tick" aria-hidden="true">✓</span>
+            </button>
+            <button class="opt" role="menuitemradio" aria-checked="false" data-online="false">
+              <span class="dot off"></span>
+              <span class="opt-text"><b>Offline</b><small>Hidden from everyone. Nothing can be sent or received.</small>
+                <small class="tech">Sends a UDP BYE, stops beacons, closes the TCP listener.</small></span>
+              <span class="tick" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </div>
+
+        <button id="tech-toggle" class="ghost-pill" aria-pressed="true">
+          <span class="code" aria-hidden="true">&lt;/&gt;</span><span id="tech-label">Hide technical details</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card area-peers">
+      <p class="eyebrow">Step 1<span class="tech"> · UDP discovery</span></p>
+      <h2>Who's nearby</h2>
+      <ul id="peers" class="list peers"><li class="empty">Looking for peers…</li></ul>
+    </section>
+
+    <section class="card area-send">
+      <p class="eyebrow">Step 2<span class="tech"> · TCP send</span></p>
+      <h2>Send something</h2>
+      <label id="drop" class="drop">
+        <input id="file" type="file" hidden>
+        <span class="drop-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 19V6m-6 6 6-6 6 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span id="drop-text">Pick a peer, then drop a file here or click to choose</span>
+      </label>
+    </section>
+
+    <section class="card area-offers">
+      <p class="eyebrow">Incoming</p>
+      <h2>Waiting for you</h2>
+      <ul id="offers" class="list"><li class="empty">Nothing waiting.</li></ul>
+    </section>
+
+    <section class="card area-transfers">
+      <p class="eyebrow">Transfers<span class="tech"> · TCP</span></p>
+      <h2>On the move</h2>
+      <ul id="transfers" class="list"><li class="empty">No transfers yet.</li></ul>
+    </section>
+
+    <section class="card night area-log tech">
+      <div class="inspector-head">
+        <div>
+          <p class="eyebrow">Under the hood</p>
+          <h2>Network inspector</h2>
+        </div>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="f-udp" checked> UDP</label>
+          <label class="chip"><input type="checkbox" id="f-tcp" checked> TCP</label>
+          <label class="chip"><input type="checkbox" id="f-own" checked> Own beacons</label>
+          <label class="chip"><input type="checkbox" id="f-pause"> Pause</label>
+          <button id="clear" class="btn ghost-light">Clear</button>
+        </div>
+      </div>
+      <div id="log" class="log"></div>
+    </section>
+  </main>
+
+  <dialog id="preview" class="preview" aria-labelledby="pv-title">
+    <header class="pv-hero">
+      <svg class="pv-sun" viewBox="0 0 300 200" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+        <circle cx="250" cy="230" r="190" fill="#FF8A2A"/>
+        <circle cx="250" cy="230" r="150" fill="#FFB547"/>
+        <circle cx="250" cy="230" r="114" fill="#FFD66B"/>
+        <circle cx="250" cy="230" r="80" fill="#FFF3DF"/>
+        <circle cx="250" cy="230" r="54" fill="#F0650A"/>
+      </svg>
+      <div class="pv-hero-text">
+        <span class="pv-chip" id="pv-chip"></span>
+        <h2 id="pv-title"></h2>
+        <p class="pv-meta" id="pv-meta"></p>
+      </div>
+      <button class="pv-close" id="pv-close" aria-label="Close preview">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+    <div class="pv-body" id="pv-body"></div>
+    <footer class="pv-foot">
+      <span class="pv-note" id="pv-note"></span>
+      <div class="btns">
+        <button class="btn outline" id="pv-done">Close</button>
+        <a id="pv-download" class="btn primary">Download</a>
+      </div>
+    </footer>
+  </dialog>
+
+  <script src="/static/app.js?v=2"></script>
+</body>
+</html>
