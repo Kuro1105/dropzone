@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Secrets
+.env
+
+# Received files and partial transfers
+downloads/
+downloads-*/
+received/
+*.part
+
+# Wireshark captures (README recipe writes dropzone.pcap)
+*.pcap
+*.pcapng
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
