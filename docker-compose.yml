@@ -1,0 +1,27 @@
+# Three DropZone nodes (Host A, B, C) on one private bridge network ("lan").
+# UIs: http://127.0.0.1:8001, :8002, :8003 (published on localhost only).
+# Received files appear in ./received/host-a, host-b, host-c on your machine.
+x-node: &node
+  build: .
+  networks: [lan]
+
+services:
+  node1:
+    <<: *node
+    environment: { DZ_NAME: "Host A" }
+    ports: ["127.0.0.1:8001:8000"]
+    volumes: ["./received/host-a:/downloads"]
+  node2:
+    <<: *node
+    environment: { DZ_NAME: "Host B" }
+    ports: ["127.0.0.1:8002:8000"]
+    volumes: ["./received/host-b:/downloads"]
+  node3:
+    <<: *node
+    environment: { DZ_NAME: "Host C" }
+    ports: ["127.0.0.1:8003:8000"]
+    volumes: ["./received/host-c:/downloads"]
+
+networks:
+  lan:
+    driver: bridge
