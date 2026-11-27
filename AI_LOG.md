@@ -60,3 +60,16 @@ Running log of what the AI assistant (Claude) built and checked at each step.
     elements, remembered in localStorage) and friendly sender names ("from Host A"). Checked with
     real clicks in headless Chrome: menu, keyboard Escape, offline/online, simple mode surviving a
     reload, image/text/unknown previews, dark mode and 375 px width.
+17. **Stale stylesheet fix.** After the UI update, one browser showed the new HTML with an old cached
+    `style.css` (unstyled status buttons). Added `Cache-Control: no-cache` for the page and `/static/*`
+    (unchanged files still get a cheap 304) and `?v=2` on the asset URLs. Local and Docker were serving
+    identical files; the difference was only the browser cache.
+18. **Submission check.** Fresh clone + new venv: 38 tests pass, the README's local, second-node and CLI
+    `recv`/`send` commands work as written. Docker: 3 nodes discover each other. Measured with a script
+    driving the real UI endpoints: a new node appears in 0.37–0.42 s, a stopped node (BYE) goes offline in
+    0.40–0.48 s, a frozen node (`docker compose pause`, no BYE) in 5.0–5.6 s; a 100 MB file Host A → Host B
+    moved at 259–353 MB/s on the Docker bridge, SHA-256 matched in 3/3 runs. Extended `.gitignore`;
+    scanned for secrets (none found).
+    - *Note:* earlier, files went missing from `received/host-b` and `host-c` during test runs. The cause was
+      never confirmed, and the AI first wrongly reported them as untouched. One copy was restored from an
+      old Docker volume.
